@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilha na Palavra — Plano de Leitura em 365 Dias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12172B;
+    --bg-panel: #1A2140;
+    --bg-panel-2: #212B52;
+    --bg-tile: #1E2648;
+    --text: #EDE8DC;
+    --text-muted: #9AA3C4;
+    --text-faint: #6B7398;
+    --gold: #CBA135;
+    --gold-bright: #E3BE55;
+    --rust: #C06A4E;
+    --done: #7CA383;
+    --border: rgba(154,163,196,0.16);
+    --border-strong: rgba(203,161,53,0.4);
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(203,161,53,0.08), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(180,87,63,0.08), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', system-ui, sans-serif;
+    line-height: 1.5;
+    padding-bottom: 4rem;
+  }
+
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    padding: 2.75rem 0 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow{
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+
+  h1{
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4.5vw, 2.7rem);
+    margin: 0 0 0.35rem;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle{
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .progress-row{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .progress-count{
+    font-family: 'Fraunces', serif;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+    white-space: nowrap;
+  }
+  .progress-count span{
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .progress-track{
+    flex: 1;
+    min-width: 160px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--bg-panel-2);
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill{
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--rust), var(--gold));
+    transition: width 0.4s ease;
+  }
+
+  .progress-pct{
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ---------- Reading panel (sticky) ---------- */
+  .reading-panel{
+    position: sticky;
+    top: 0.85rem;
+    z-index: 20;
+    margin-top: 1.5rem;
+    background: linear-gradient(155deg, var(--bg-panel-2), var(--bg-panel));
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 1.15rem 1.3rem;
+    box-shadow: 0 12px 30px -12px rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .reading-panel .rp-left{
+    display: flex;
+    align-items: baseline;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .rp-day{
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--gold-bright);
+    white-space: nowrap;
+  }
+
+  .rp-date{
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+
+  .rp-reading{
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .rp-actions{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .btn{
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 7px;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--border);
+    background: var(--bg-tile);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover{ border-color: var(--border-strong); }
+
+  .btn-mark{
+    background: transparent;
+    border-color: var(--done);
+    color: var(--done);
+  }
+  .btn-mark.is-done{
+    background: var(--done);
+    color: #0f1a12;
+    border-color: var(--done);
+  }
+
+  /* ---------- Controls ---------- */
+  .controls{
+    display: flex;
+    gap: 0.7rem;
+    margin: 1.5rem 0 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .search-box{
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+  .search-box input{
+    width: 100%;
+    background: var(--bg-tile);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.65rem 0.9rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.92rem;
+  }
+  .search-box input:focus{
+    outline: none;
+    border-color: var(--gold);
+  }
+  .search-box input::placeholder{ color: var(--text-faint); }
+
+  .controls .btn{ padding: 0.65rem 0.95rem; }
+
+  /* ---------- Month sections ---------- */
+  .months{
+    margin-top: 1.6rem;
+  }
+
+  details.month{
+    border-bottom: 1px solid var(--border);
+  }
+  details.month[open] summary{
+    color: var(--gold-bright);
+  }
+
+  summary{
+    list-style: none;
+    cursor: pointer;
+    padding: 1rem 0.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    user-select: none;
+  }
+  summary::-webkit-details-marker{ display:none; }
+
+  .summary-right{
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .month-mini-track{
+    width: 70px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--bg-panel-2);
+    overflow: hidden;
+  }
+  .month-mini-fill{
+    height: 100%;
+    background: var(--gold);
+  }
+
+  .chev{
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    transition: transform 0.2s;
+  }
+  details[open] .chev{ transform: rotate(90deg); }
+
+  .day-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.55rem;
+    padding: 0.3rem 0.15rem 1.4rem;
+  }
+
+  .day-tile{
+    position: relative;
+    text-align: left;
+    background: var(--bg-tile);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 0.65rem 0.6rem;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+    transition: border-color 0.15s, transform 0.1s, background 0.15s;
+  }
+  .day-tile:hover{
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+  }
+  .day-tile.is-today{
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold), 0 0 16px rgba(203,161,53,0.25);
+  }
+  .day-tile.is-active{
+    border-color: var(--gold-bright);
+    background: var(--bg-panel-2);
+  }
+  .day-tile.is-done{
+    border-color: rgba(124,163,131,0.55);
+  }
+
+  .tile-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+
+  .tile-day{
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .day-tile.is-today .tile-day{ color: var(--gold-bright); }
+
+  .tile-check{
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-faint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .tile-check:hover{ border-color: var(--done); }
+  .day-tile.is-done .tile-check{
+    background: var(--done);
+    border-color: var(--done);
+  }
+  .tile-check svg{
+    width: 10px; height: 10px;
+    opacity: 0;
+  }
+  .day-tile.is-done .tile-check svg{ opacity: 1; }
+
+  .tile-reading{
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .tile-date{
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    margin-top: 0.2rem;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top: 2.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .no-results{
+    color: var(--text-faint);
+    padding: 2rem 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Plano de leitura cronológico</div>
+    <h1>Trilha na Palavra</h1>
+    <div class="subtitle">365 dias percorrendo as Escrituras na ordem dos acontecimentos.</div>
+    <div class="progress-row">
+      <div class="progress-count" id="progressCount">— <span>/ 365 lidos</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-pct" id="progressPct">0%</div>
+    </div>
+  </header>
+
+  <div class="reading-panel" id="readingPanel">
+    <div class="rp-left">
+      <span class="rp-day" id="rpDay">Dia —</span>
+      <span class="rp-date" id="rpDate">—</span>
+      <span class="rp-reading" id="rpReading">Selecione um dia abaixo</span>
+    </div>
+    <div class="rp-actions">
+      <button class="btn" id="btnHoje">Ir para hoje</button>
+      <button class="btn btn-mark" id="btnMark">Marcar como lido</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Buscar por número do dia, data ou livro (ex: 214, 02/08, Jr)">
+    </div>
+    <button class="btn" id="btnMarkUpToToday">Marcar até hoje como lido</button>
+    <button class="btn" id="btnReset">Limpar progresso</button>
+  </div>
+
+  <div class="months" id="months"></div>
+
+  <footer>
+    <span>Toque em um dia para ver a leitura. O círculo marca como lido.</span>
+    <span id="todayLabel"></span>
+  </footer>
+</div>
+
+<script>
+const PLAN = [{"day": 1, "date": "2026-01-01", "dd": 1, "mm": 1, "month": "Janeiro", "reading": "Gn 1–2"}, {"day": 2, "date": "2026-01-02", "dd": 2, "mm": 1, "month": "Janeiro", "reading": "Gn 3–5"}, {"day": 3, "date": "2026-01-03", "dd": 3, "mm": 1, "month": "Janeiro", "reading": "Gn 6–8"}, {"day": 4, "date": "2026-01-04", "dd": 4, "mm": 1, "month": "Janeiro", "reading": "Gn 9–11"}, {"day": 5, "date": "2026-01-05", "dd": 5, "mm": 1, "month": "Janeiro", "reading": "Jó 1–5"}, {"day": 6, "date": "2026-01-06", "dd": 6, "mm": 1, "month": "Janeiro", "reading": "Jó 6–9"}, {"day": 7, "date": "2026-01-07", "dd": 7, "mm": 1, "month": "Janeiro", "reading": "Jó 10–13"}, {"day": 8, "date": "2026-01-08", "dd": 8, "mm": 1, "month": "Janeiro", "reading": "Jó 14–16"}, {"day": 9, "date": "2026-01-09", "dd": 9, "mm": 1, "month": "Janeiro", "reading": "Jó 17–20"}, {"day": 10, "date": "2026-01-10", "dd": 10, "mm": 1, "month": "Janeiro", "reading": "Jó 21–23"}, {"day": 11, "date": "2026-01-11", "dd": 11, "mm": 1, "month": "Janeiro", "reading": "Jó 24–28"}, {"day": 12, "date": "2026-01-12", "dd": 12, "mm": 1, "month": "Janeiro", "reading": "Jó 29–31"}, {"day": 13, "date": "2026-01-13", "dd": 13, "mm": 1, "month": "Janeiro", "reading": "Jó 32–34"}, {"day": 14, "date": "2026-01-14", "dd": 14, "mm": 1, "month": "Janeiro", "reading": "Jó 35–37"}, {"day": 15, "date": "2026-01-15", "dd": 15, "mm": 1, "month": "Janeiro", "reading": "Jó 38–39"}, {"day": 16, "date": "2026-01-16", "dd": 16, "mm": 1, "month": "Janeiro", "reading": "Jó 40–42"}, {"day": 17, "date": "2026-01-17", "dd": 17, "mm": 1, "month": "Janeiro", "reading": "Gn 12–14"}, {"day": 18, "date": "2026-01-18", "dd": 18, "mm": 1, "month": "Janeiro", "reading": "Gn 15–17"}, {"day": 19, "date": "2026-01-19", "dd": 19, "mm": 1, "month": "Janeiro", "reading": "Gn 18–19"}, {"day": 20, "date": "2026-01-20", "dd": 20, "mm": 1, "month": "Janeiro", "reading": "Gn 20–22"}, {"day": 21, "date": "2026-01-21", "dd": 21, "mm": 1, "month": "Janeiro", "reading": "Gn 23–24"}, {"day": 22, "date": "2026-01-22", "dd": 22, "mm": 1, "month": "Janeiro", "reading": "Gn 25–26"}, {"day": 23, "date": "2026-01-23", "dd": 23, "mm": 1, "month": "Janeiro", "reading": "Gn 27–28"}, {"day": 24, "date": "2026-01-24", "dd": 24, "mm": 1, "month": "Janeiro", "reading": "Gn 29–30"}, {"day": 25, "date": "2026-01-25", "dd": 25, "mm": 1, "month": "Janeiro", "reading": "Gn 31–32"}, {"day": 26, "date": "2026-01-26", "dd": 26, "mm": 1, "month": "Janeiro", "reading": "Gn 33–35"}, {"day": 27, "date": "2026-01-27", "dd": 27, "mm": 1, "month": "Janeiro", "reading": "Gn 36–37"}, {"day": 28, "date": "2026-01-28", "dd": 28, "mm": 1, "month": "Janeiro", "reading": "Gn 38–40"}, {"day": 29, "date": "2026-01-29", "dd": 29, "mm": 1, "month": "Janeiro", "reading": "Gn 41–42"}, {"day": 30, "date": "2026-01-30", "dd": 30, "mm": 1, "month": "Janeiro", "reading": "Gn 43–45"}, {"day": 31, "date": "2026-01-31", "dd": 31, "mm": 1, "month": "Janeiro", "reading": "Gn 46–50"}, {"day": 32, "date": "2026-02-01", "dd": 1, "mm": 2, "month": "Fevereiro", "reading": "Êx 1–3"}, {"day": 33, "date": "2026-02-02", "dd": 2, "mm": 2, "month": "Fevereiro", "reading": "Êx 4–6"}, {"day": 34, "date": "2026-02-03", "dd": 3, "mm": 2, "month": "Fevereiro", "reading": "Êx 7–9"}, {"day": 35, "date": "2026-02-04", "dd": 4, "mm": 2, "month": "Fevereiro", "reading": "Êx 10–12"}, {"day": 36, "date": "2026-02-05", "dd": 5, "mm": 2, "month": "Fevereiro", "reading": "Êx 13–15"}, {"day": 37, "date": "2026-02-06", "dd": 6, "mm": 2, "month": "Fevereiro", "reading": "Êx 16–18"}, {"day": 38, "date": "2026-02-07", "dd": 7, "mm": 2, "month": "Fevereiro", "reading": "Êx 19–21"}, {"day": 39, "date": "2026-02-08", "dd": 8, "mm": 2, "month": "Fevereiro", "reading": "Êx 22–24"}, {"day": 40, "date": "2026-02-09", "dd": 9, "mm": 2, "month": "Fevereiro", "reading": "Êx 25–27"}, {"day": 41, "date": "2026-02-10", "dd": 10, "mm": 2, "month": "Fevereiro", "reading": "Êx 28–29"}, {"day": 42, "date": "2026-02-11", "dd": 11, "mm": 2, "month": "Fevereiro", "reading": "Êx 30–32"}, {"day": 43, "date": "2026-02-12", "dd": 12, "mm": 2, "month": "Fevereiro", "reading": "Êx 33–35"}, {"day": 44, "date": "2026-02-13", "dd": 13, "mm": 2, "month": "Fevereiro", "reading": "Êx 36–38"}, {"day": 45, "date": "2026-02-14", "dd": 14, "mm": 2, "month": "Fevereiro", "reading": "Êx 39–40"}, {"day": 46, "date": "2026-02-15", "dd": 15, "mm": 2, "month": "Fevereiro", "reading": "Lv 1–4"}, {"day": 47, "date": "2026-02-16", "dd": 16, "mm": 2, "month": "Fevereiro", "reading": "Lv 5–7"}, {"day": 48, "date": "2026-02-17", "dd": 17, "mm": 2, "month": "Fevereiro", "reading": "Lv 8–10"}, {"day": 49, "date": "2026-02-18", "dd": 18, "mm": 2, "month": "Fevereiro", "reading": "Lv 11–13"}, {"day": 50, "date": "2026-02-19", "dd": 19, "mm": 2, "month": "Fevereiro", "reading": "Lv 14–16"}, {"day": 51, "date": "2026-02-20", "dd": 20, "mm": 2, "month": "Fevereiro", "reading": "Lv 17–19"}, {"day": 52, "date": "2026-02-21", "dd": 21, "mm": 2, "month": "Fevereiro", "reading": "Lv 20–22"}, {"day": 53, "date": "2026-02-22", "dd": 22, "mm": 2, "month": "Fevereiro", "reading": "Lv 23–25"}, {"day": 54, "date": "2026-02-23", "dd": 23, "mm": 2, "month": "Fevereiro", "reading": "Lv 26–27"}, {"day": 55, "date": "2026-02-24", "dd": 24, "mm": 2, "month": "Fevereiro", "reading": "Nm 1–3"}, {"day": 56, "date": "2026-02-25", "dd": 25, "mm": 2, "month": "Fevereiro", "reading": "Nm 4–6"}, {"day": 57, "date": "2026-02-26", "dd": 26, "mm": 2, "month": "Fevereiro", "reading": "Nm 7–8"}, {"day": 58, "date": "2026-02-27", "dd": 27, "mm": 2, "month": "Fevereiro", "reading": "Nm 9–11"}, {"day": 59, "date": "2026-02-28", "dd": 28, "mm": 2, "month": "Fevereiro", "reading": "Nm 12–14"}, {"day": 60, "date": "2026-03-01", "dd": 1, "mm": 3, "month": "Março", "reading": "Nm 15–16"}, {"day": 61, "date": "2026-03-02", "dd": 2, "mm": 3, "month": "Março", "reading": "Nm 17–19"}, {"day": 62, "date": "2026-03-03", "dd": 3, "mm": 3, "month": "Março", "reading": "Nm 20–22"}, {"day": 63, "date": "2026-03-04", "dd": 4, "mm": 3, "month": "Março", "reading": "Nm 23–25"}, {"day": 64, "date": "2026-03-05", "dd": 5, "mm": 3, "month": "Março", "reading": "Nm 26–28"}, {"day": 65, "date": "2026-03-06", "dd": 6, "mm": 3, "month": "Março", "reading": "Nm 29–31"}, {"day": 66, "date": "2026-03-07", "dd": 7, "mm": 3, "month": "Março", "reading": "Nm 32–34"}, {"day": 67, "date": "2026-03-08", "dd": 8, "mm": 3, "month": "Março", "reading": "Nm 35–36"}, {"day": 68, "date": "2026-03-09", "dd": 9, "mm": 3, "month": "Março", "reading": "Dt 1–2"}, {"day": 69, "date": "2026-03-10", "dd": 10, "mm": 3, "month": "Março", "reading": "Dt 3–4"}, {"day": 70, "date": "2026-03-11", "dd": 11, "mm": 3, "month": "Março", "reading": "Dt 5–7"}, {"day": 71, "date": "2026-03-12", "dd": 12, "mm": 3, "month": "Março", "reading": "Dt 8–10"}, {"day": 72, "date": "2026-03-13", "dd": 13, "mm": 3, "month": "Março", "reading": "Dt 11–13"}, {"day": 73, "date": "2026-03-14", "dd": 14, "mm": 3, "month": "Março", "reading": "Dt 14–16"}, {"day": 74, "date": "2026-03-15", "dd": 15, "mm": 3, "month": "Março", "reading": "Dt 17–19"}, {"day": 75, "date": "2026-03-16", "dd": 16, "mm": 3, "month": "Março", "reading": "Dt 20–22"}, {"day": 76, "date": "2026-03-17", "dd": 17, "mm": 3, "month": "Março", "reading": "Dt 23–25"}, {"day": 77, "date": "2026-03-18", "dd": 18, "mm": 3, "month": "Março", "reading": "Dt 26–28"}, {"day": 78, "date": "2026-03-19", "dd": 19, "mm": 3, "month": "Março", "reading": "Dt 29–31"}, {"day": 79, "date": "2026-03-20", "dd": 20, "mm": 3, "month": "Março", "reading": "Dt 32–34"}, {"day": 80, "date": "2026-03-21", "dd": 21, "mm": 3, "month": "Março", "reading": "Sl 90 • Js 1–2"}, {"day": 81, "date": "2026-03-22", "dd": 22, "mm": 3, "month": "Março", "reading": "Js 3–6"}, {"day": 82, "date": "2026-03-23", "dd": 23, "mm": 3, "month": "Março", "reading": "Js 7–9"}, {"day": 83, "date": "2026-03-24", "dd": 24, "mm": 3, "month": "Março", "reading": "Js 10–12"}, {"day": 84, "date": "2026-03-25", "dd": 25, "mm": 3, "month": "Março", "reading": "Js 13–15"}, {"day": 85, "date": "2026-03-26", "dd": 26, "mm": 3, "month": "Março", "reading": "Js 16–18"}, {"day": 86, "date": "2026-03-27", "dd": 27, "mm": 3, "month": "Março", "reading": "Js 19–21"}, {"day": 87, "date": "2026-03-28", "dd": 28, "mm": 3, "month": "Março", "reading": "Js 22–24"}, {"day": 88, "date": "2026-03-29", "dd": 29, "mm": 3, "month": "Março", "reading": "Jz 1–2"}, {"day": 89, "date": "2026-03-30", "dd": 30, "mm": 3, "month": "Março", "reading": "Jz 3–5"}, {"day": 90, "date": "2026-03-31", "dd": 31, "mm": 3, "month": "Março", "reading": "Jz 6–8"}, {"day": 91, "date": "2026-04-01", "dd": 1, "mm": 4, "month": "Abril", "reading": "Jz 9–11"}, {"day": 92, "date": "2026-04-02", "dd": 2, "mm": 4, "month": "Abril", "reading": "Jz 12–14"}, {"day": 93, "date": "2026-04-03", "dd": 3, "mm": 4, "month": "Abril", "reading": "Jz 15–17"}, {"day": 94, "date": "2026-04-04", "dd": 4, "mm": 4, "month": "Abril", "reading": "Jz 18–19"}, {"day": 95, "date": "2026-04-05", "dd": 5, "mm": 4, "month": "Abril", "reading": "Jz 20–21"}, {"day": 96, "date": "2026-04-06", "dd": 6, "mm": 4, "month": "Abril", "reading": "Rt 1–4"}, {"day": 97, "date": "2026-04-07", "dd": 7, "mm": 4, "month": "Abril", "reading": "1Sm 1–3"}, {"day": 98, "date": "2026-04-08", "dd": 8, "mm": 4, "month": "Abril", "reading": "1Sm 4–7"}, {"day": 99, "date": "2026-04-09", "dd": 9, "mm": 4, "month": "Abril", "reading": "1Sm 8–10"}, {"day": 100, "date": "2026-04-10", "dd": 10, "mm": 4, "month": "Abril", "reading": "1Sm 11–13"}, {"day": 101, "date": "2026-04-11", "dd": 11, "mm": 4, "month": "Abril", "reading": "1Sm 14–15"}, {"day": 102, "date": "2026-04-12", "dd": 12, "mm": 4, "month": "Abril", "reading": "1Sm 16–17 • Sl 11, 59"}, {"day": 103, "date": "2026-04-13", "dd": 13, "mm": 4, "month": "Abril", "reading": "1Sm 18–19 • Sl 7, 27"}, {"day": 104, "date": "2026-04-14", "dd": 14, "mm": 4, "month": "Abril", "reading": "1Sm 20–21 • Sl 34, 52"}, {"day": 105, "date": "2026-04-15", "dd": 15, "mm": 4, "month": "Abril", "reading": "1Sm 22 • Sl 57, 142"}, {"day": 106, "date": "2026-04-16", "dd": 16, "mm": 4, "month": "Abril", "reading": "1Sm 23 • Sl 54, 63"}, {"day": 107, "date": "2026-04-17", "dd": 17, "mm": 4, "month": "Abril", "reading": "1Sm 24–25 • Sl 120"}, {"day": 108, "date": "2026-04-18", "dd": 18, "mm": 4, "month": "Abril", "reading": "1Sm 26–27 • Sl 31, 56"}, {"day": 109, "date": "2026-04-19", "dd": 19, "mm": 4, "month": "Abril", "reading": "1Sm 28–29 • Sl 140"}, {"day": 110, "date": "2026-04-20", "dd": 20, "mm": 4, "month": "Abril", "reading": "1Sm 30–31 • 1Cr 10"}, {"day": 111, "date": "2026-04-21", "dd": 21, "mm": 4, "month": "Abril", "reading": "2Sm 1–2 • 1Cr 11–12"}, {"day": 112, "date": "2026-04-22", "dd": 22, "mm": 4, "month": "Abril", "reading": "2Sm 3–4 • 1Cr 13"}, {"day": 113, "date": "2026-04-23", "dd": 23, "mm": 4, "month": "Abril", "reading": "2Sm 5 • 1Cr 14–15"}, {"day": 114, "date": "2026-04-24", "dd": 24, "mm": 4, "month": "Abril", "reading": "Sl 133 • 1Cr 16"}, {"day": 115, "date": "2026-04-25", "dd": 25, "mm": 4, "month": "Abril", "reading": "2Sm 6 • Sl 15, 24"}, {"day": 116, "date": "2026-04-26", "dd": 26, "mm": 4, "month": "Abril", "reading": "Sl 23"}, {"day": 117, "date": "2026-04-27", "dd": 27, "mm": 4, "month": "Abril", "reading": "2Sm 7 • 1Cr 17 • Sl 89"}, {"day": 118, "date": "2026-04-28", "dd": 28, "mm": 4, "month": "Abril", "reading": "2Sm 8–9 • 1Cr 18 • Sl 60"}, {"day": 119, "date": "2026-04-29", "dd": 29, "mm": 4, "month": "Abril", "reading": "2Sm 10 • 1Cr 19 • Sl 20"}, {"day": 120, "date": "2026-04-30", "dd": 30, "mm": 4, "month": "Abril", "reading": "2Sm 11–12 • 1Cr 20 • Sl 51"}, {"day": 121, "date": "2026-05-01", "dd": 1, "mm": 5, "month": "Maio", "reading": "2Sm 13–14"}, {"day": 122, "date": "2026-05-02", "dd": 2, "mm": 5, "month": "Maio", "reading": "2Sm 15 • Sl 3, 69"}, {"day": 123, "date": "2026-05-03", "dd": 3, "mm": 5, "month": "Maio", "reading": "2Sm 16–18"}, {"day": 124, "date": "2026-05-04", "dd": 4, "mm": 5, "month": "Maio", "reading": "2Sm 19–20"}, {"day": 125, "date": "2026-05-05", "dd": 5, "mm": 5, "month": "Maio", "reading": "2Sm 21 • Sl 18"}, {"day": 126, "date": "2026-05-06", "dd": 6, "mm": 5, "month": "Maio", "reading": "2Sm 22–23"}, {"day": 127, "date": "2026-05-07", "dd": 7, "mm": 5, "month": "Maio", "reading": "2Sm 24 • 1Cr 21 • Sl 30"}, {"day": 128, "date": "2026-05-08", "dd": 8, "mm": 5, "month": "Maio", "reading": "1Cr 22–24"}, {"day": 129, "date": "2026-05-09", "dd": 9, "mm": 5, "month": "Maio", "reading": "1Cr 25–27"}, {"day": 130, "date": "2026-05-10", "dd": 10, "mm": 5, "month": "Maio", "reading": "1Cr 28–29 • Sl 72"}, {"day": 131, "date": "2026-05-11", "dd": 11, "mm": 5, "month": "Maio", "reading": "1Rs 1–2 • Sl 37"}, {"day": 132, "date": "2026-05-12", "dd": 12, "mm": 5, "month": "Maio", "reading": "1Rs 3–4 • 2Cr 1"}, {"day": 133, "date": "2026-05-13", "dd": 13, "mm": 5, "month": "Maio", "reading": "Pv 1–3"}, {"day": 134, "date": "2026-05-14", "dd": 14, "mm": 5, "month": "Maio", "reading": "Pv 4–7"}, {"day": 135, "date": "2026-05-15", "dd": 15, "mm": 5, "month": "Maio", "reading": "Pv 8–11"}, {"day": 136, "date": "2026-05-16", "dd": 16, "mm": 5, "month": "Maio", "reading": "Pv 12–15"}, {"day": 137, "date": "2026-05-17", "dd": 17, "mm": 5, "month": "Maio", "reading": "Pv 16–19"}, {"day": 138, "date": "2026-05-18", "dd": 18, "mm": 5, "month": "Maio", "reading": "Pv 20–22"}, {"day": 139, "date": "2026-05-19", "dd": 19, "mm": 5, "month": "Maio", "reading": "Pv 23–26"}, {"day": 140, "date": "2026-05-20", "dd": 20, "mm": 5, "month": "Maio", "reading": "Pv 27–29"}, {"day": 141, "date": "2026-05-21", "dd": 21, "mm": 5, "month": "Maio", "reading": "Ec 1–4"}, {"day": 142, "date": "2026-05-22", "dd": 22, "mm": 5, "month": "Maio", "reading": "Ec 5–8"}, {"day": 143, "date": "2026-05-23", "dd": 23, "mm": 5, "month": "Maio", "reading": "Ec 9–12"}, {"day": 144, "date": "2026-05-24", "dd": 24, "mm": 5, "month": "Maio", "reading": "Ct 1–4"}, {"day": 145, "date": "2026-05-25", "dd": 25, "mm": 5, "month": "Maio", "reading": "Ct 5–8"}, {"day": 146, "date": "2026-05-26", "dd": 26, "mm": 5, "month": "Maio", "reading": "1Rs 5–6 • 2Cr 2–3"}, {"day": 147, "date": "2026-05-27", "dd": 27, "mm": 5, "month": "Maio", "reading": "1Rs 7 • 2Cr 4"}, {"day": 148, "date": "2026-05-28", "dd": 28, "mm": 5, "month": "Maio", "reading": "1Rs 8 • 2Cr 5–6"}, {"day": 149, "date": "2026-05-29", "dd": 29, "mm": 5, "month": "Maio", "reading": "2Cr 7 • Sl 136"}, {"day": 150, "date": "2026-05-30", "dd": 30, "mm": 5, "month": "Maio", "reading": "1Rs 9 • 2Cr 8"}, {"day": 151, "date": "2026-05-31", "dd": 31, "mm": 5, "month": "Maio", "reading": "Pv 30–31"}, {"day": 152, "date": "2026-06-01", "dd": 1, "mm": 6, "month": "Junho", "reading": "1Rs 10–11 • 2Cr 9"}, {"day": 153, "date": "2026-06-02", "dd": 2, "mm": 6, "month": "Junho", "reading": "1Rs 12–13 • 2Cr 10"}, {"day": 154, "date": "2026-06-03", "dd": 3, "mm": 6, "month": "Junho", "reading": "1Rs 14 • 2Cr 11–12"}, {"day": 155, "date": "2026-06-04", "dd": 4, "mm": 6, "month": "Junho", "reading": "1Rs 15 • 2Cr 13–14"}, {"day": 156, "date": "2026-06-05", "dd": 5, "mm": 6, "month": "Junho", "reading": "2Cr 15–16 • 1Rs 16"}, {"day": 157, "date": "2026-06-06", "dd": 6, "mm": 6, "month": "Junho", "reading": "1Rs 17–19"}, {"day": 158, "date": "2026-06-07", "dd": 7, "mm": 6, "month": "Junho", "reading": "1Rs 20–21"}, {"day": 159, "date": "2026-06-08", "dd": 8, "mm": 6, "month": "Junho", "reading": "1Rs 22 • 2Cr 18"}, {"day": 160, "date": "2026-06-09", "dd": 9, "mm": 6, "month": "Junho", "reading": "2Cr 19–20 • 2Rs 1"}, {"day": 161, "date": "2026-06-10", "dd": 10, "mm": 6, "month": "Junho", "reading": "2Rs 2–4"}, {"day": 162, "date": "2026-06-11", "dd": 11, "mm": 6, "month": "Junho", "reading": "2Rs 5–7"}, {"day": 163, "date": "2026-06-12", "dd": 12, "mm": 6, "month": "Junho", "reading": "2Rs 8–9 • 2Cr 21"}, {"day": 164, "date": "2026-06-13", "dd": 13, "mm": 6, "month": "Junho", "reading": "2Rs 10–11 • 2Cr 22"}, {"day": 165, "date": "2026-06-14", "dd": 14, "mm": 6, "month": "Junho", "reading": "2Rs 12 • 2Cr 23–24"}, {"day": 166, "date": "2026-06-15", "dd": 15, "mm": 6, "month": "Junho", "reading": "Jl 1–3"}, {"day": 167, "date": "2026-06-16", "dd": 16, "mm": 6, "month": "Junho", "reading": "2Rs 13–14 • 2Cr 25"}, {"day": 168, "date": "2026-06-17", "dd": 17, "mm": 6, "month": "Junho", "reading": "Am 1–3 • Ob 1"}, {"day": 169, "date": "2026-06-18", "dd": 18, "mm": 6, "month": "Junho", "reading": "Am 4–6"}, {"day": 170, "date": "2026-06-19", "dd": 19, "mm": 6, "month": "Junho", "reading": "Am 7–9"}, {"day": 171, "date": "2026-06-20", "dd": 20, "mm": 6, "month": "Junho", "reading": "2Cr 26 • Is 1–2"}, {"day": 172, "date": "2026-06-21", "dd": 21, "mm": 6, "month": "Junho", "reading": "Is 3–6"}, {"day": 173, "date": "2026-06-22", "dd": 22, "mm": 6, "month": "Junho", "reading": "2Rs 15 • Os 1–3"}, {"day": 174, "date": "2026-06-23", "dd": 23, "mm": 6, "month": "Junho", "reading": "Os 4–7"}, {"day": 175, "date": "2026-06-24", "dd": 24, "mm": 6, "month": "Junho", "reading": "Os 8–10"}, {"day": 176, "date": "2026-06-25", "dd": 25, "mm": 6, "month": "Junho", "reading": "Os 11–14"}, {"day": 177, "date": "2026-06-26", "dd": 26, "mm": 6, "month": "Junho", "reading": "Is 7–9 • Jn 1–4"}, {"day": 178, "date": "2026-06-27", "dd": 27, "mm": 6, "month": "Junho", "reading": "Is 10–12"}, {"day": 179, "date": "2026-06-28", "dd": 28, "mm": 6, "month": "Junho", "reading": "Mq 1–4"}, {"day": 180, "date": "2026-06-29", "dd": 29, "mm": 6, "month": "Junho", "reading": "Mq 5–7"}, {"day": 181, "date": "2026-06-30", "dd": 30, "mm": 6, "month": "Junho", "reading": "2Rs 16–17 • 2Cr 27–28"}, {"day": 182, "date": "2026-07-01", "dd": 1, "mm": 7, "month": "Julho", "reading": "Is 13–15"}, {"day": 183, "date": "2026-07-02", "dd": 2, "mm": 7, "month": "Julho", "reading": "Is 16–18"}, {"day": 184, "date": "2026-07-03", "dd": 3, "mm": 7, "month": "Julho", "reading": "Is 19–21"}, {"day": 185, "date": "2026-07-04", "dd": 4, "mm": 7, "month": "Julho", "reading": "Is 22–24"}, {"day": 186, "date": "2026-07-05", "dd": 5, "mm": 7, "month": "Julho", "reading": "Is 25–27"}, {"day": 187, "date": "2026-07-06", "dd": 6, "mm": 7, "month": "Julho", "reading": "2Rs 18 • 2Cr 29–31"}, {"day": 188, "date": "2026-07-07", "dd": 7, "mm": 7, "month": "Julho", "reading": "Sl 48, 76, 80"}, {"day": 189, "date": "2026-07-08", "dd": 8, "mm": 7, "month": "Julho", "reading": "Is 28–30"}, {"day": 190, "date": "2026-07-09", "dd": 9, "mm": 7, "month": "Julho", "reading": "Is 31–33"}, {"day": 191, "date": "2026-07-10", "dd": 10, "mm": 7, "month": "Julho", "reading": "Is 34–36"}, {"day": 192, "date": "2026-07-11", "dd": 11, "mm": 7, "month": "Julho", "reading": "2Rs 19 • Is 37–38"}, {"day": 193, "date": "2026-07-12", "dd": 12, "mm": 7, "month": "Julho", "reading": "2Rs 20 • Is 39 • Sl 75"}, {"day": 194, "date": "2026-07-13", "dd": 13, "mm": 7, "month": "Julho", "reading": "Is 40–42"}, {"day": 195, "date": "2026-07-14", "dd": 14, "mm": 7, "month": "Julho", "reading": "Is 43–45"}, {"day": 196, "date": "2026-07-15", "dd": 15, "mm": 7, "month": "Julho", "reading": "Is 46–48"}, {"day": 197, "date": "2026-07-16", "dd": 16, "mm": 7, "month": "Julho", "reading": "2Rs 21 • 2Cr 33"}, {"day": 198, "date": "2026-07-17", "dd": 17, "mm": 7, "month": "Julho", "reading": "Is 49–51"}, {"day": 199, "date": "2026-07-18", "dd": 18, "mm": 7, "month": "Julho", "reading": "Is 52–54"}, {"day": 200, "date": "2026-07-19", "dd": 19, "mm": 7, "month": "Julho", "reading": "Is 55–57"}, {"day": 201, "date": "2026-07-20", "dd": 20, "mm": 7, "month": "Julho", "reading": "Is 58–60"}, {"day": 202, "date": "2026-07-21", "dd": 21, "mm": 7, "month": "Julho", "reading": "Is 61–63"}, {"day": 203, "date": "2026-07-22", "dd": 22, "mm": 7, "month": "Julho", "reading": "Is 64–66"}, {"day": 204, "date": "2026-07-23", "dd": 23, "mm": 7, "month": "Julho", "reading": "2Rs 22–23 • 2Cr 34"}, {"day": 205, "date": "2026-07-24", "dd": 24, "mm": 7, "month": "Julho", "reading": "2Cr 35 • Sf 1–3 • Na 1–3"}, {"day": 206, "date": "2026-07-25", "dd": 25, "mm": 7, "month": "Julho", "reading": "Jr 1–3"}, {"day": 207, "date": "2026-07-26", "dd": 26, "mm": 7, "month": "Julho", "reading": "Jr 4–6"}, {"day": 208, "date": "2026-07-27", "dd": 27, "mm": 7, "month": "Julho", "reading": "Jr 7–9"}, {"day": 209, "date": "2026-07-28", "dd": 28, "mm": 7, "month": "Julho", "reading": "Jr 10–12"}, {"day": 210, "date": "2026-07-29", "dd": 29, "mm": 7, "month": "Julho", "reading": "Hc 1–3"}, {"day": 211, "date": "2026-07-30", "dd": 30, "mm": 7, "month": "Julho", "reading": "Jr 13–15"}, {"day": 212, "date": "2026-07-31", "dd": 31, "mm": 7, "month": "Julho", "reading": "Jr 16–18"}, {"day": 213, "date": "2026-08-01", "dd": 1, "mm": 8, "month": "Agosto", "reading": "Jr 19–21"}, {"day": 214, "date": "2026-08-02", "dd": 2, "mm": 8, "month": "Agosto", "reading": "Jr 22–23"}, {"day": 215, "date": "2026-08-03", "dd": 3, "mm": 8, "month": "Agosto", "reading": "Jr 24–26"}, {"day": 216, "date": "2026-08-04", "dd": 4, "mm": 8, "month": "Agosto", "reading": "Jr 27–29"}, {"day": 217, "date": "2026-08-05", "dd": 5, "mm": 8, "month": "Agosto", "reading": "Jr 30–31"}, {"day": 218, "date": "2026-08-06", "dd": 6, "mm": 8, "month": "Agosto", "reading": "Jr 32–33"}, {"day": 219, "date": "2026-08-07", "dd": 7, "mm": 8, "month": "Agosto", "reading": "Jr 34–36"}, {"day": 220, "date": "2026-08-08", "dd": 8, "mm": 8, "month": "Agosto", "reading": "Jr 37–39"}, {"day": 221, "date": "2026-08-09", "dd": 9, "mm": 8, "month": "Agosto", "reading": "2Rs 24–25 • 2Cr 36"}, {"day": 222, "date": "2026-08-10", "dd": 10, "mm": 8, "month": "Agosto", "reading": "Jr 40–42"}, {"day": 223, "date": "2026-08-11", "dd": 11, "mm": 8, "month": "Agosto", "reading": "Jr 43–45"}, {"day": 224, "date": "2026-08-12", "dd": 12, "mm": 8, "month": "Agosto", "reading": "Jr 46–48"}, {"day": 225, "date": "2026-08-13", "dd": 13, "mm": 8, "month": "Agosto", "reading": "Jr 49–50"}, {"day": 226, "date": "2026-08-14", "dd": 14, "mm": 8, "month": "Agosto", "reading": "Jr 51–52"}, {"day": 227, "date": "2026-08-15", "dd": 15, "mm": 8, "month": "Agosto", "reading": "Lm 1–2"}, {"day": 228, "date": "2026-08-16", "dd": 16, "mm": 8, "month": "Agosto", "reading": "Lm 3–5"}, {"day": 229, "date": "2026-08-17", "dd": 17, "mm": 8, "month": "Agosto", "reading": "Ez 1–3"}, {"day": 230, "date": "2026-08-18", "dd": 18, "mm": 8, "month": "Agosto", "reading": "Ez 4–6"}, {"day": 231, "date": "2026-08-19", "dd": 19, "mm": 8, "month": "Agosto", "reading": "Ez 7–9"}, {"day": 232, "date": "2026-08-20", "dd": 20, "mm": 8, "month": "Agosto", "reading": "Ez 10–12"}, {"day": 233, "date": "2026-08-21", "dd": 21, "mm": 8, "month": "Agosto", "reading": "Ez 13–15"}, {"day": 234, "date": "2026-08-22", "dd": 22, "mm": 8, "month": "Agosto", "reading": "Ez 16–17"}, {"day": 235, "date": "2026-08-23", "dd": 23, "mm": 8, "month": "Agosto", "reading": "Ez 18–19"}, {"day": 236, "date": "2026-08-24", "dd": 24, "mm": 8, "month": "Agosto", "reading": "Ez 20–21"}, {"day": 237, "date": "2026-08-25", "dd": 25, "mm": 8, "month": "Agosto", "reading": "Ez 22–23"}, {"day": 238, "date": "2026-08-26", "dd": 26, "mm": 8, "month": "Agosto", "reading": "Ez 24–26"}, {"day": 239, "date": "2026-08-27", "dd": 27, "mm": 8, "month": "Agosto", "reading": "Ez 27–28"}, {"day": 240, "date": "2026-08-28", "dd": 28, "mm": 8, "month": "Agosto", "reading": "Ez 29–30"}, {"day": 241, "date": "2026-08-29", "dd": 29, "mm": 8, "month": "Agosto", "reading": "Ez 31–32"}, {"day": 242, "date": "2026-08-30", "dd": 30, "mm": 8, "month": "Agosto", "reading": "Ez 33–34"}, {"day": 243, "date": "2026-08-31", "dd": 31, "mm": 8, "month": "Agosto", "reading": "Ez 35–36"}, {"day": 244, "date": "2026-09-01", "dd": 1, "mm": 9, "month": "Setembro", "reading": "Ez 37–39"}, {"day": 245, "date": "2026-09-02", "dd": 2, "mm": 9, "month": "Setembro", "reading": "Ez 40–42"}, {"day": 246, "date": "2026-09-03", "dd": 3, "mm": 9, "month": "Setembro", "reading": "Ez 43–45"}, {"day": 247, "date": "2026-09-04", "dd": 4, "mm": 9, "month": "Setembro", "reading": "Ez 46–48"}, {"day": 248, "date": "2026-09-05", "dd": 5, "mm": 9, "month": "Setembro", "reading": "Dn 1–3"}, {"day": 249, "date": "2026-09-06", "dd": 6, "mm": 9, "month": "Setembro", "reading": "Dn 4–6"}, {"day": 250, "date": "2026-09-07", "dd": 7, "mm": 9, "month": "Setembro", "reading": "Dn 7–9"}, {"day": 251, "date": "2026-09-08", "dd": 8, "mm": 9, "month": "Setembro", "reading": "Dn 10–12"}, {"day": 252, "date": "2026-09-09", "dd": 9, "mm": 9, "month": "Setembro", "reading": "Ed 1–3"}, {"day": 253, "date": "2026-09-10", "dd": 10, "mm": 9, "month": "Setembro", "reading": "Ed 4–6 • Sl 126"}, {"day": 254, "date": "2026-09-11", "dd": 11, "mm": 9, "month": "Setembro", "reading": "Ag 1–2"}, {"day": 255, "date": "2026-09-12", "dd": 12, "mm": 9, "month": "Setembro", "reading": "Zc 1–4"}, {"day": 256, "date": "2026-09-13", "dd": 13, "mm": 9, "month": "Setembro", "reading": "Zc 5–8"}, {"day": 257, "date": "2026-09-14", "dd": 14, "mm": 9, "month": "Setembro", "reading": "Zc 9–12"}, {"day": 258, "date": "2026-09-15", "dd": 15, "mm": 9, "month": "Setembro", "reading": "Zc 13–14"}, {"day": 259, "date": "2026-09-16", "dd": 16, "mm": 9, "month": "Setembro", "reading": "Et 1–3"}, {"day": 260, "date": "2026-09-17", "dd": 17, "mm": 9, "month": "Setembro", "reading": "Et 4–7"}, {"day": 261, "date": "2026-09-18", "dd": 18, "mm": 9, "month": "Setembro", "reading": "Et 8–10"}, {"day": 262, "date": "2026-09-19", "dd": 19, "mm": 9, "month": "Setembro", "reading": "Ed 7–8"}, {"day": 263, "date": "2026-09-20", "dd": 20, "mm": 9, "month": "Setembro", "reading": "Ed 9–10"}, {"day": 264, "date": "2026-09-21", "dd": 21, "mm": 9, "month": "Setembro", "reading": "Ne 1–3"}, {"day": 265, "date": "2026-09-22", "dd": 22, "mm": 9, "month": "Setembro", "reading": "Ne 4–6"}, {"day": 266, "date": "2026-09-23", "dd": 23, "mm": 9, "month": "Setembro", "reading": "Ne 7–9"}, {"day": 267, "date": "2026-09-24", "dd": 24, "mm": 9, "month": "Setembro", "reading": "Ne 10–11"}, {"day": 268, "date": "2026-09-25", "dd": 25, "mm": 9, "month": "Setembro", "reading": "Ne 12–13"}, {"day": 269, "date": "2026-09-26", "dd": 26, "mm": 9, "month": "Setembro", "reading": "Ml 1–4"}, {"day": 270, "date": "2026-09-27", "dd": 27, "mm": 9, "month": "Setembro", "reading": "Sl 1, 2, 4, 5, 6"}, {"day": 271, "date": "2026-09-28", "dd": 28, "mm": 9, "month": "Setembro", "reading": "Sl 8, 9, 10, 12, 13"}, {"day": 272, "date": "2026-09-29", "dd": 29, "mm": 9, "month": "Setembro", "reading": "Sl 14, 16, 17, 19"}, {"day": 273, "date": "2026-09-30", "dd": 30, "mm": 9, "month": "Setembro", "reading": "Sl 21, 22, 26, 28"}, {"day": 274, "date": "2026-10-01", "dd": 1, "mm": 10, "month": "Outubro", "reading": "Sl 29, 32, 35, 36"}, {"day": 275, "date": "2026-10-02", "dd": 2, "mm": 10, "month": "Outubro", "reading": "Sl 38, 39, 40, 41"}, {"day": 276, "date": "2026-10-03", "dd": 3, "mm": 10, "month": "Outubro", "reading": "Sl 42, 43, 44, 45"}, {"day": 277, "date": "2026-10-04", "dd": 4, "mm": 10, "month": "Outubro", "reading": "Sl 46, 47, 49, 50"}, {"day": 278, "date": "2026-10-05", "dd": 5, "mm": 10, "month": "Outubro", "reading": "Sl 53, 55, 58, 61"}, {"day": 279, "date": "2026-10-06", "dd": 6, "mm": 10, "month": "Outubro", "reading": "Sl 62, 64, 65, 66"}, {"day": 280, "date": "2026-10-07", "dd": 7, "mm": 10, "month": "Outubro", "reading": "Sl 67, 68, 70, 71"}, {"day": 281, "date": "2026-10-08", "dd": 8, "mm": 10, "month": "Outubro", "reading": "Sl 73, 74, 77, 78"}, {"day": 282, "date": "2026-10-09", "dd": 9, "mm": 10, "month": "Outubro", "reading": "Sl 79, 81, 82, 83"}, {"day": 283, "date": "2026-10-10", "dd": 10, "mm": 10, "month": "Outubro", "reading": "Sl 84, 85, 86, 87"}, {"day": 284, "date": "2026-10-11", "dd": 11, "mm": 10, "month": "Outubro", "reading": "Sl 88, 91, 92, 93"}, {"day": 285, "date": "2026-10-12", "dd": 12, "mm": 10, "month": "Outubro", "reading": "Sl 94, 95, 96, 97"}, {"day": 286, "date": "2026-10-13", "dd": 13, "mm": 10, "month": "Outubro", "reading": "Sl 98, 99, 100, 101"}, {"day": 287, "date": "2026-10-14", "dd": 14, "mm": 10, "month": "Outubro", "reading": "Sl 102, 103, 104"}, {"day": 288, "date": "2026-10-15", "dd": 15, "mm": 10, "month": "Outubro", "reading": "Sl 105, 106"}, {"day": 289, "date": "2026-10-16", "dd": 16, "mm": 10, "month": "Outubro", "reading": "Sl 107, 108, 109"}, {"day": 290, "date": "2026-10-17", "dd": 17, "mm": 10, "month": "Outubro", "reading": "Sl 110, 111, 112, 113"}, {"day": 291, "date": "2026-10-18", "dd": 18, "mm": 10, "month": "Outubro", "reading": "Sl 114, 115, 116, 117, 118"}, {"day": 292, "date": "2026-10-19", "dd": 19, "mm": 10, "month": "Outubro", "reading": "Sl 119"}, {"day": 293, "date": "2026-10-20", "dd": 20, "mm": 10, "month": "Outubro", "reading": "Sl 121, 122, 123, 124, 125"}, {"day": 294, "date": "2026-10-21", "dd": 21, "mm": 10, "month": "Outubro", "reading": "Sl 127, 128, 129, 130, 131"}, {"day": 295, "date": "2026-10-22", "dd": 22, "mm": 10, "month": "Outubro", "reading": "Sl 132, 134, 135, 137"}, {"day": 296, "date": "2026-10-23", "dd": 23, "mm": 10, "month": "Outubro", "reading": "Sl 138, 139, 141, 143"}, {"day": 297, "date": "2026-10-24", "dd": 24, "mm": 10, "month": "Outubro", "reading": "Sl 144, 145, 146, 147"}, {"day": 298, "date": "2026-10-25", "dd": 25, "mm": 10, "month": "Outubro", "reading": "Sl 148, 149, 150"}, {"day": 299, "date": "2026-10-26", "dd": 26, "mm": 10, "month": "Outubro", "reading": "Lc 1 • Jo 1"}, {"day": 300, "date": "2026-10-27", "dd": 27, "mm": 10, "month": "Outubro", "reading": "Mt 1 • Lc 2"}, {"day": 301, "date": "2026-10-28", "dd": 28, "mm": 10, "month": "Outubro", "reading": "Mt 2 • Lc 3"}, {"day": 302, "date": "2026-10-29", "dd": 29, "mm": 10, "month": "Outubro", "reading": "Mt 4 • Lc 4 • Jo 2"}, {"day": 303, "date": "2026-10-30", "dd": 30, "mm": 10, "month": "Outubro", "reading": "Jo 4 • Lc 5"}, {"day": 304, "date": "2026-10-31", "dd": 31, "mm": 10, "month": "Outubro", "reading": "Mt 5–7"}, {"day": 305, "date": "2026-11-01", "dd": 1, "mm": 11, "month": "Novembro", "reading": "Mt 8 • Lc 7"}, {"day": 306, "date": "2026-11-02", "dd": 2, "mm": 11, "month": "Novembro", "reading": "Mt 11–12"}, {"day": 307, "date": "2026-11-03", "dd": 3, "mm": 11, "month": "Novembro", "reading": "Mt 13 • Lc 8"}, {"day": 308, "date": "2026-11-04", "dd": 4, "mm": 11, "month": "Novembro", "reading": "Mt 10 • Mt 14 • Mc 6"}, {"day": 309, "date": "2026-11-05", "dd": 5, "mm": 11, "month": "Novembro", "reading": "Jo 6 • Mt 15 • Mc 7"}, {"day": 310, "date": "2026-11-06", "dd": 6, "mm": 11, "month": "Novembro", "reading": "Mt 16 • Mc 8 • Lc 9"}, {"day": 311, "date": "2026-11-07", "dd": 7, "mm": 11, "month": "Novembro", "reading": "Mt 17 • Mc 9 • Mt 18"}, {"day": 312, "date": "2026-11-08", "dd": 8, "mm": 11, "month": "Novembro", "reading": "Jo 7–9"}, {"day": 313, "date": "2026-11-09", "dd": 9, "mm": 11, "month": "Novembro", "reading": "Jo 10 • Lc 10"}, {"day": 314, "date": "2026-11-10", "dd": 10, "mm": 11, "month": "Novembro", "reading": "Lc 11–13"}, {"day": 315, "date": "2026-11-11", "dd": 11, "mm": 11, "month": "Novembro", "reading": "Lc 14–16"}, {"day": 316, "date": "2026-11-12", "dd": 12, "mm": 11, "month": "Novembro", "reading": "Lc 17 • Jo 11"}, {"day": 317, "date": "2026-11-13", "dd": 13, "mm": 11, "month": "Novembro", "reading": "Lc 18 • Mt 19 • Mc 10"}, {"day": 318, "date": "2026-11-14", "dd": 14, "mm": 11, "month": "Novembro", "reading": "Mt 20 • Lc 19"}, {"day": 319, "date": "2026-11-15", "dd": 15, "mm": 11, "month": "Novembro", "reading": "Mt 21 • Mc 11"}, {"day": 320, "date": "2026-11-16", "dd": 16, "mm": 11, "month": "Novembro", "reading": "Jo 12 • Mt 22 • Mc 12"}, {"day": 321, "date": "2026-11-17", "dd": 17, "mm": 11, "month": "Novembro", "reading": "Mt 23 • Lc 20–21"}, {"day": 322, "date": "2026-11-18", "dd": 18, "mm": 11, "month": "Novembro", "reading": "Mt 24 • Mc 13"}, {"day": 323, "date": "2026-11-19", "dd": 19, "mm": 11, "month": "Novembro", "reading": "Mt 25 • Mt 26 • Mc 14"}, {"day": 324, "date": "2026-11-20", "dd": 20, "mm": 11, "month": "Novembro", "reading": "Lc 22 • Jo 13–15"}, {"day": 325, "date": "2026-11-21", "dd": 21, "mm": 11, "month": "Novembro", "reading": "Jo 16–17 • Mt 27"}, {"day": 326, "date": "2026-11-22", "dd": 22, "mm": 11, "month": "Novembro", "reading": "Mc 15 • Lc 23 • Jo 18–19"}, {"day": 327, "date": "2026-11-23", "dd": 23, "mm": 11, "month": "Novembro", "reading": "Lc 24 • Jo 20–21"}, {"day": 328, "date": "2026-11-24", "dd": 24, "mm": 11, "month": "Novembro", "reading": "At 1–3"}, {"day": 329, "date": "2026-11-25", "dd": 25, "mm": 11, "month": "Novembro", "reading": "At 4–6"}, {"day": 330, "date": "2026-11-26", "dd": 26, "mm": 11, "month": "Novembro", "reading": "At 7–9"}, {"day": 331, "date": "2026-11-27", "dd": 27, "mm": 11, "month": "Novembro", "reading": "At 10–12"}, {"day": 332, "date": "2026-11-28", "dd": 28, "mm": 11, "month": "Novembro", "reading": "At 13–14 • Tg 1–2"}, {"day": 333, "date": "2026-11-29", "dd": 29, "mm": 11, "month": "Novembro", "reading": "Tg 3–5 • At 15–16"}, {"day": 334, "date": "2026-11-30", "dd": 30, "mm": 11, "month": "Novembro", "reading": "Gl 1–3"}, {"day": 335, "date": "2026-12-01", "dd": 1, "mm": 12, "month": "Dezembro", "reading": "Gl 4–6 • At 17"}, {"day": 336, "date": "2026-12-02", "dd": 2, "mm": 12, "month": "Dezembro", "reading": "1Ts 1–5 • 2Ts 1–3"}, {"day": 337, "date": "2026-12-03", "dd": 3, "mm": 12, "month": "Dezembro", "reading": "At 18–19"}, {"day": 338, "date": "2026-12-04", "dd": 4, "mm": 12, "month": "Dezembro", "reading": "1Co 1–4"}, {"day": 339, "date": "2026-12-05", "dd": 5, "mm": 12, "month": "Dezembro", "reading": "1Co 5–8"}, {"day": 340, "date": "2026-12-06", "dd": 6, "mm": 12, "month": "Dezembro", "reading": "1Co 9–12"}, {"day": 341, "date": "2026-12-07", "dd": 7, "mm": 12, "month": "Dezembro", "reading": "1Co 13–16"}, {"day": 342, "date": "2026-12-08", "dd": 8, "mm": 12, "month": "Dezembro", "reading": "2Co 1–4"}, {"day": 343, "date": "2026-12-09", "dd": 9, "mm": 12, "month": "Dezembro", "reading": "2Co 5–9"}, {"day": 344, "date": "2026-12-10", "dd": 10, "mm": 12, "month": "Dezembro", "reading": "2Co 10–13"}, {"day": 345, "date": "2026-12-11", "dd": 11, "mm": 12, "month": "Dezembro", "reading": "Rm 1–3"}, {"day": 346, "date": "2026-12-12", "dd": 12, "mm": 12, "month": "Dezembro", "reading": "Rm 4–7"}, {"day": 347, "date": "2026-12-13", "dd": 13, "mm": 12, "month": "Dezembro", "reading": "Rm 8–11"}, {"day": 348, "date": "2026-12-14", "dd": 14, "mm": 12, "month": "Dezembro", "reading": "Rm 12–16"}, {"day": 349, "date": "2026-12-15", "dd": 15, "mm": 12, "month": "Dezembro", "reading": "At 20–23"}, {"day": 350, "date": "2026-12-16", "dd": 16, "mm": 12, "month": "Dezembro", "reading": "At 24–26"}, {"day": 351, "date": "2026-12-17", "dd": 17, "mm": 12, "month": "Dezembro", "reading": "At 27–28"}, {"day": 352, "date": "2026-12-18", "dd": 18, "mm": 12, "month": "Dezembro", "reading": "Ef 1–3"}, {"day": 353, "date": "2026-12-19", "dd": 19, "mm": 12, "month": "Dezembro", "reading": "Ef 4–6 • Fp 1–2"}, {"day": 354, "date": "2026-12-20", "dd": 20, "mm": 12, "month": "Dezembro", "reading": "Fp 3–4 • Cl 1–2"}, {"day": 355, "date": "2026-12-21", "dd": 21, "mm": 12, "month": "Dezembro", "reading": "Cl 3–4 • Fm 1"}, {"day": 356, "date": "2026-12-22", "dd": 22, "mm": 12, "month": "Dezembro", "reading": "1Tm 1–4"}, {"day": 357, "date": "2026-12-23", "dd": 23, "mm": 12, "month": "Dezembro", "reading": "1Tm 5–6 • Tt 1–3"}, {"day": 358, "date": "2026-12-24", "dd": 24, "mm": 12, "month": "Dezembro", "reading": "1Pe 1–5"}, {"day": 359, "date": "2026-12-25", "dd": 25, "mm": 12, "month": "Dezembro", "reading": "2Pe 1–3 • 2Tm 1–2"}, {"day": 360, "date": "2026-12-26", "dd": 26, "mm": 12, "month": "Dezembro", "reading": "2Tm 3–4 • Hb 1–4"}, {"day": 361, "date": "2026-12-27", "dd": 27, "mm": 12, "month": "Dezembro", "reading": "Hb 5–9 • Ap 1–3"}, {"day": 362, "date": "2026-12-28", "dd": 28, "mm": 12, "month": "Dezembro", "reading": "Hb 10–13 • Jd 1 • Ap 4–8"}, {"day": 363, "date": "2026-12-29", "dd": 29, "mm": 12, "month": "Dezembro", "reading": "1Jo 1–5 • 2Jo • 3Jo • Ap 9–14"}, {"day": 364, "date": "2026-12-30", "dd": 30, "mm": 12, "month": "Dezembro", "reading": "Ap 15–21"}, {"day": 365, "date": "2026-12-31", "dd": 31, "mm": 12, "month": "Dezembro", "reading": "Ap 22 • Jo 3 • Mt 28"}];
+
+const MONTHS_ORDER = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+let completed = new Set();
+let selectedDay = null;
+let todayEntry = null;
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function findToday(){
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth()+1, d = now.getDate();
+  const iso = `${y}-${pad(m)}-${pad(d)}`;
+  let entry = PLAN.find(p => p.date === iso);
+  if(!entry){
+    // fallback: clamp to closest day within the 2026 plan
+    const target = new Date(iso);
+    let best = PLAN[0], bestDiff = Infinity;
+    for(const p of PLAN){
+      const diff = Math.abs(new Date(p.date) - target);
+      if(diff < bestDiff){ bestDiff = diff; best = p; }
+    }
+    entry = best;
+  }
+  return entry;
+}
+
+async function loadCompleted(){
+  try{
+    const res = await window.storage.get('completed-days', false);
+    if(res && res.value){
+      const arr = JSON.parse(res.value);
+      completed = new Set(arr);
+    }
+  }catch(e){ /* nothing stored yet */ }
+}
+
+async function saveCompleted(){
+  try{
+    await window.storage.set('completed-days', JSON.stringify(Array.from(completed)), false);
+  }catch(e){ console.error('Falha ao salvar progresso', e); }
+}
+
+function fmtDate(iso){
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}`;
+}
+
+function render(){
+  renderProgress();
+  renderMonths();
+  renderReadingPanel();
+}
+
+function renderProgress(){
+  const pct = Math.round((completed.size/365)*100);
+  document.getElementById('progressCount').innerHTML = `${completed.size}<span> / 365 lidos</span>`;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+function renderReadingPanel(){
+  const entry = selectedDay ? PLAN.find(p=>p.day===selectedDay) : todayEntry;
+  if(!entry) return;
+  document.getElementById('rpDay').textContent = `Dia ${entry.day}`;
+  document.getElementById('rpDate').textContent = fmtDate(entry.date) + (entry.day===todayEntry.day ? ' · hoje' : '');
+  document.getElementById('rpReading').textContent = entry.reading;
+  const btn = document.getElementById('btnMark');
+  const isDone = completed.has(entry.day);
+  btn.classList.toggle('is-done', isDone);
+  btn.textContent = isDone ? 'Lido ✓' : 'Marcar como lido';
+}
+
+function toggleDone(day){
+  if(completed.has(day)) completed.delete(day);
+  else completed.add(day);
+  saveCompleted();
+  render();
+}
+
+function renderMonths(query){
+  const container = document.getElementById('months');
+  container.innerHTML = '';
+  const q = (query||'').trim().toLowerCase();
+
+  let anyResults = false;
+
+  MONTHS_ORDER.forEach(monthName => {
+    const monthDays = PLAN.filter(p => p.month === monthName);
+    const filtered = q ? monthDays.filter(p => {
+      return String(p.day).includes(q) ||
+             fmtDate(p.date).includes(q) ||
+             p.reading.toLowerCase().includes(q);
+    }) : monthDays;
+
+    if(q && filtered.length === 0) return;
+    anyResults = true;
+
+    const doneInMonth = monthDays.filter(p => completed.has(p.day)).length;
+    const monthPct = Math.round((doneInMonth/monthDays.length)*100);
+
+    const details = document.createElement('details');
+    details.className = 'month';
+    const hasToday = monthDays.some(p => p.day === todayEntry.day);
+    if(hasToday || q) details.open = true;
+
+    const summary = document.createElement('summary');
+    summary.innerHTML = `
+      <span>${monthName}</span>
+      <span class="summary-right">
+        <span class="month-mini-track"><span class="month-mini-fill" style="width:${monthPct}%"></span></span>
+        <span class="chev">▸</span>
+      </span>`;
+    details.appendChild(summary);
+
+    const grid = document.createElement('div');
+    grid.className = 'day-grid';
+
+    filtered.forEach(p => {
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'day-tile';
+      if(p.day === todayEntry.day) tile.classList.add('is-today');
+      if(p.day === selectedDay) tile.classList.add('is-active');
+      if(completed.has(p.day)) tile.classList.add('is-done');
+      tile.setAttribute('data-day', p.day);
+
+      tile.innerHTML = `
+        <div class="tile-top">
+          <span class="tile-day">DIA ${p.day}</span>
+          <span class="tile-check" data-check="${p.day}">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2L4.8 9L10 3" stroke="#0f1a12" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="tile-reading">${p.reading}</div>
+        <div class="tile-date">${fmtDate(p.date)}</div>
+      `;
+
+      tile.addEventListener('click', (e) => {
+        if(e.target.closest('[data-check]')){
+          e.stopPropagation();
+          toggleDone(p.day);
+          return;
+        }
+        selectedDay = p.day;
+        renderReadingPanel();
+        document.querySelectorAll('.day-tile').forEach(t => t.classList.remove('is-active'));
+        tile.classList.add('is-active');
+        document.getElementById('readingPanel').scrollIntoView({behavior:'smooth', block:'start'});
+      });
+
+      grid.appendChild(tile);
+    });
+
+    details.appendChild(grid);
+    container.appendChild(details);
+  });
+
+  if(!anyResults){
+    container.innerHTML = '<div class="no-results">Nenhum dia encontrado para essa busca.</div>';
+  }
+}
+
+document.getElementById('btnMark').addEventListener('click', () => {
+  const entry = selectedDay ? PLAN.find(p=>p.day===selectedDay) : todayEntry;
+  toggleDone(entry.day);
+});
+
+document.getElementById('btnHoje').addEventListener('click', () => {
+  selectedDay = todayEntry.day;
+  render();
+  document.getElementById('readingPanel').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('btnMarkUpToToday').addEventListener('click', () => {
+  for(let d=1; d<=todayEntry.day; d++) completed.add(d);
+  saveCompleted();
+  render();
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  if(confirm('Limpar todo o progresso marcado?')){
+    completed.clear();
+    saveCompleted();
+    render();
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  renderMonths(e.target.value);
+});
+
+(async function init(){
+  todayEntry = findToday();
+  selectedDay = todayEntry.day;
+  document.getElementById('todayLabel').textContent = `Hoje: Dia ${todayEntry.day} de 365`;
+  await loadCompleted();
+  render();
+})();
+</script>
+
+</body>
+</html>
