@@ -508,15 +508,40 @@ function renderReadingPanel(){
   btn.textContent = isDone ? 'Lido ✓' : 'Marcar como lido';
 }
 
-function toggleDone(day){
+function toggleDone(day, tileEl){
   if(completed.has(day)) completed.delete(day);
   else completed.add(day);
   saveCompleted();
-  render();
+  // Atualiza só o tile clicado — sem reconstruir o DOM
+  if(tileEl){
+    tileEl.classList.toggle('is-done', completed.has(day));
+  }
+  // Barra de progresso global
+  renderProgress();
+  // Mini-barra do mês correspondente
+  if(tileEl){
+    const details = tileEl.closest('details.month');
+    if(details){
+      const monthName = details.querySelector('summary span').textContent;
+      const monthDays = PLAN.filter(p => p.month === monthName);
+      const doneInMonth = monthDays.filter(p => completed.has(p.day)).length;
+      const monthPct = Math.round((doneInMonth/monthDays.length)*100);
+      const fill = details.querySelector('.month-mini-fill');
+      if(fill) fill.style.width = monthPct + '%';
+    }
+  }
+  // Se o dia marcado está selecionado no painel, atualiza o botão do painel
+  const panelEntry = selectedDay ? PLAN.find(p=>p.day===selectedDay) : todayEntry;
+  if(panelEntry && panelEntry.day === day) renderReadingPanel();
 }
 
 function renderMonths(query){
   const container = document.getElementById('months');
+  // Preservar quais meses estão abertos antes de reconstruir
+  const openMonths = new Set();
+  container.querySelectorAll('details.month[open] summary span:first-child').forEach(el => {
+    openMonths.add(el.textContent);
+  });
   container.innerHTML = '';
   const q = (query||'').trim().toLowerCase();
 
@@ -539,7 +564,8 @@ function renderMonths(query){
     const details = document.createElement('details');
     details.className = 'month';
     const hasToday = monthDays.some(p => p.day === todayEntry.day);
-    if(hasToday || q) details.open = true;
+    // Abrir se: estava aberto antes, é o mês atual (na primeira carga) ou há busca ativa
+    if(openMonths.has(monthName) || (openMonths.size === 0 && hasToday) || q) details.open = true;
 
     const summary = document.createElement('summary');
     summary.innerHTML = `
@@ -576,14 +602,14 @@ function renderMonths(query){
       tile.addEventListener('click', (e) => {
         if(e.target.closest('[data-check]')){
           e.stopPropagation();
-          toggleDone(p.day);
+          toggleDone(p.day, tile);
           return;
         }
         selectedDay = p.day;
         renderReadingPanel();
         document.querySelectorAll('.day-tile').forEach(t => t.classList.remove('is-active'));
         tile.classList.add('is-active');
-        document.getElementById('readingPanel').scrollIntoView({behavior:'smooth', block:'start'});
+        // Sem scroll automático — o usuário permanece onde está
       });
 
       grid.appendChild(tile);
@@ -600,7 +626,9 @@ function renderMonths(query){
 
 document.getElementById('btnMark').addEventListener('click', () => {
   const entry = selectedDay ? PLAN.find(p=>p.day===selectedDay) : todayEntry;
-  toggleDone(entry.day);
+  // Encontra o tile correspondente na tela para atualizar visualmente
+  const tileEl = document.querySelector(`.day-tile[data-day="${entry.day}"]`);
+  toggleDone(entry.day, tileEl);
 });
 
 document.getElementById('btnHoje').addEventListener('click', () => {
